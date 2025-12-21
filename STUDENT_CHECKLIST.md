@@ -6,45 +6,45 @@ Use this checklist to track your progress through the 4-week project.
 
 ### Environment Setup
 
-- [ ] Install Node.js 20+ (`node --version`)
-- [ ] Install npm 10+ (`npm --version`)
-- [ ] Clone project repository
-- [ ] Run `npm install` successfully
-- [ ] Run `npm run dev` and see app at http://localhost:5173
-- [ ] Explore all pages (Home, Books, Recommendations, Reading Lists, Admin)
-- [ ] Read QUICK_START.md
-- [ ] Read PROJECT_TIMELINE_4WEEKS.md
+- [x] Install Node.js 20+ (`node --version`)
+- [x] Install npm 10+ (`npm --version`)
+- [x] Clone project repository
+- [x] Run `npm install` successfully
+- [x] Run `npm run dev` and see app at http://localhost:5173
+- [x] Explore all pages (Home, Books, Recommendations, Reading Lists, Admin)
+- [x] Read QUICK_START.md
+- [x] Read PROJECT_TIMELINE_4WEEKS.md
 
 ### AWS Account Setup
 
-- [ ] Create AWS account at https://aws.amazon.com
-- [ ] Set up billing alert for $10 USD
-- [ ] Create IAM user for development
-- [ ] Install AWS CLI (`aws --version`)
-- [ ] Configure AWS CLI (`aws configure`)
-- [ ] Verify AWS CLI works (`aws sts get-caller-identity`)
+- [x] Create AWS account at https://aws.amazon.com
+- [x] Set up billing alert for $10 USD
+- [x] Create IAM user for development
+- [x] Install AWS CLI (`aws --version`)
+- [x] Configure AWS CLI (`aws configure`)
+- [x] Verify AWS CLI works (`aws sts get-caller-identity`)
 
 ### First Lambda Function
 
-- [ ] Create Lambda function: `hello-world-test`
-- [ ] Deploy and test Lambda in AWS Console
-- [ ] Create API Gateway REST API
-- [ ] Create `/hello` resource and GET method
-- [ ] Enable CORS on API Gateway
-- [ ] Deploy API to `dev` stage
-- [ ] Test with curl: `curl https://YOUR-API-ID.execute-api.us-east-1.amazonaws.com/dev/hello`
-- [ ] See successful response with message and timestamp
+- [x] Create Lambda function: `hello-world-test`
+- [x] Deploy and test Lambda in AWS Console
+- [x] Create API Gateway REST API
+- [x] Create `/hello` resource and GET method
+- [x] Enable CORS on API Gateway
+- [x] Deploy API to `dev` stage
+- [x] Test with curl: `curl https://YOUR-API-ID.execute-api.us-east-1.amazonaws.com/dev/hello`
+- [x] See successful response with message and timestamp
 
 ### Create GitHub Repository
 
-- [ ] Create public GitHub repository: `library-recommendation-system`
-- [ ] Initialize git in project: `git init`
-- [ ] Verify .gitignore exists (already provided in project)
-- [ ] Make initial commit: `git add . && git commit -m "Initial commit: Week 1 complete"`
-- [ ] Push to GitHub: `git remote add origin <your-repo-url> && git push -u origin main`
-- [ ] Add repository description: "AI-powered library book recommendation system (CENG413 Project)"
-- [ ] Add topics: `aws`, `react`, `typescript`, `serverless`, `student-project`
-- [ ] Commit your progress daily throughout the project
+- [x] Create public GitHub repository: `library-recommendation-system`
+- [x] Initialize git in project: `git init`
+- [x] Verify .gitignore exists (already provided in project)
+- [x] Make initial commit: `git add . && git commit -m "Initial commit: Week 1 complete"`
+- [x] Push to GitHub: `git remote add origin <your-repo-url> && git push -u origin main`
+- [x] Add repository description: "AI-powered library book recommendation system (CENG413 Project)"
+- [x] Add topics: `aws`, `react`, `typescript`, `serverless`, `student-project`
+- [x] Commit your progress daily throughout the project
 
 **✅ Week 1 Complete!** You have a working Lambda function and your project is on GitHub.
 
