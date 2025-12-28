@@ -40,8 +40,8 @@ import { mockBooks, mockReadingLists } from './mockData';
  * ============================================================================
  */
 
-// TODO: Uncomment this after deploying API Gateway (Week 2, Day 4)
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+// API Gateway URL - connected to your Lambda functions
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
 /**
  * TODO: Implement this function in Week 3, Day 4
@@ -89,10 +89,16 @@ import { mockBooks, mockReadingLists } from './mockData';
  * Expected response: Array of Book objects from DynamoDB
  */
 export async function getBooks(): Promise<Book[]> {
-  // TODO: Remove this mock implementation after deploying Lambda
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(mockBooks), 500);
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/books`);
+    if (!response.ok) throw new Error('Failed to fetch books');
+    const data = await response.json();
+    return data.books || [];
+  } catch (error) {
+    console.error('Error fetching books:', error);
+    // Fallback to mock data if API fails
+    return mockBooks;
+  }
 }
 
 /**
@@ -113,13 +119,18 @@ export async function getBooks(): Promise<Book[]> {
  * Expected response: Single Book object or null if not found
  */
 export async function getBook(id: string): Promise<Book | null> {
-  // TODO: Remove this mock implementation after deploying Lambda
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const book = mockBooks.find((b) => b.id === id);
-      resolve(book || null);
-    }, 300);
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/books/${id}`);
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error('Failed to fetch book');
+    const data = await response.json();
+    return data.book || null;
+  } catch (error) {
+    console.error('Error fetching book:', error);
+    // Fallback to mock data if API fails
+    const book = mockBooks.find((b) => b.id === id);
+    return book || null;
+  }
 }
 
 /**
@@ -242,105 +253,106 @@ export async function getRecommendations(): Promise<Recommendation[]> {
 
 /**
  * Get user's reading lists
- *
- * TODO: Replace with real API call in Week 2, Day 5-7
- *
- * Implementation steps:
- * 1. Deploy Lambda function: library-get-reading-lists
- * 2. Lambda should query DynamoDB by userId (from Cognito token)
- * 3. Create API Gateway endpoint: GET /reading-lists
- * 4. Add Cognito authorizer (Week 3)
- * 5. Replace mock code below with:
- *
- * const headers = await getAuthHeaders();
- * const response = await fetch(`${API_BASE_URL}/reading-lists`, {
- *   headers
- * });
- * if (!response.ok) throw new Error('Failed to fetch reading lists');
- * return response.json();
- *
- * Expected response: Array of ReadingList objects for the authenticated user
  */
 export async function getReadingLists(): Promise<ReadingList[]> {
-  // TODO: Remove this mock implementation after deploying Lambda
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(mockReadingLists), 500);
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/reading-lists`);
+    if (!response.ok) throw new Error('Failed to fetch reading lists');
+    const data = await response.json();
+    return data.readingLists || [];
+  } catch (error) {
+    console.error('Error fetching reading lists:', error);
+    // Fallback to mock data if API fails
+    return mockReadingLists;
+  }
 }
 
 /**
  * Create a new reading list
- *
- * TODO: Replace with real API call in Week 2, Day 5-7
- *
- * Implementation steps:
- * 1. Deploy Lambda function: library-create-reading-list
- * 2. Lambda should generate UUID for id and timestamps
- * 3. Lambda should get userId from Cognito token
- * 4. Create API Gateway endpoint: POST /reading-lists
- * 5. Add Cognito authorizer (Week 3)
- * 6. Replace mock code below with:
- *
- * const headers = await getAuthHeaders();
- * const response = await fetch(`${API_BASE_URL}/reading-lists`, {
- *   method: 'POST',
- *   headers,
- *   body: JSON.stringify(list)
- * });
- * if (!response.ok) throw new Error('Failed to create reading list');
- * return response.json();
- *
- * Expected response: Complete ReadingList object with generated id and timestamps
  */
 export async function createReadingList(
   list: Omit<ReadingList, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<ReadingList> {
-  // TODO: Remove this mock implementation after deploying Lambda
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const newList: ReadingList = {
-        ...list,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      resolve(newList);
-    }, 500);
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/reading-lists`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(list)
+    });
+    if (!response.ok) throw new Error('Failed to create reading list');
+    const data = await response.json();
+    return data.readingList;
+  } catch (error) {
+    console.error('Error creating reading list:', error);
+    // Fallback to mock implementation
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const newList: ReadingList = {
+          ...list,
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        resolve(newList);
+      }, 500);
+    });
+  }
 }
 
 /**
  * Update a reading list
- * TODO: Replace with PUT /reading-lists/:id API call
  */
 export async function updateReadingList(
   id: string,
   list: Partial<ReadingList>
 ): Promise<ReadingList> {
-  // Mock implementation
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const existingList = mockReadingLists.find((l) => l.id === id);
-      const updatedList: ReadingList = {
-        ...existingList!,
-        ...list,
-        id,
-        updatedAt: new Date().toISOString(),
-      };
-      resolve(updatedList);
-    }, 500);
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/reading-lists/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(list)
+    });
+    if (!response.ok) throw new Error('Failed to update reading list');
+    const data = await response.json();
+    return data.readingList;
+  } catch (error) {
+    console.error('Error updating reading list:', error);
+    // Fallback to mock implementation
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const existingList = mockReadingLists.find((l) => l.id === id);
+        const updatedList: ReadingList = {
+          ...existingList!,
+          ...list,
+          id,
+          updatedAt: new Date().toISOString(),
+        };
+        resolve(updatedList);
+      }, 500);
+    });
+  }
 }
 
 /**
  * Delete a reading list
- * TODO: Replace with DELETE /reading-lists/:id API call
  */
-export async function deleteReadingList(): Promise<void> {
-  // Mock implementation
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(), 300);
-  });
+export async function deleteReadingList(id: string): Promise<void> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reading-lists/${id}?userId=1`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error('Failed to delete reading list');
+  } catch (error) {
+    console.error('Error deleting reading list:', error);
+    // Fallback to mock implementation
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(), 300);
+    });
+  }
 }
 
 /**

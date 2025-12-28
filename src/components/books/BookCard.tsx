@@ -34,7 +34,7 @@ export function BookCard({ book }: BookCardProps) {
           alt={book.title}
           className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
           onError={(e) => {
-            e.currentTarget.src = 'https://via.placeholder.com/300x400?text=No+Cover';
+            e.currentTarget.src = 'https://picsum.photos/300/400?random=' + book.id;
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

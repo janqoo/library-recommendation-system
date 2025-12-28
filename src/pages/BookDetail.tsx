@@ -88,7 +88,7 @@ export function BookDetail() {
                   alt={book.title}
                   className="w-full rounded-2xl shadow-2xl group-hover:shadow-glow transition-all duration-300"
                   onError={(e) => {
-                    e.currentTarget.src = 'https://via.placeholder.com/300x400?text=No+Cover';
+                    e.currentTarget.src = 'https://picsum.photos/300/400?random=' + book.id;
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-violet-900/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>

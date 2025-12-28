@@ -1,0 +1,16 @@
+{
+  "name": "library-get-books",
+  "version": "1.0.0",
+  "description": "Lambda function to get all books from DynamoDB",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["aws", "lambda", "dynamodb", "books"],
+  "author": "Library Team",
+  "license": "MIT"
+}
