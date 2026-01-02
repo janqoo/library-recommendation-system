@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Book } from '@/types';
 import { formatRating } from '@/utils/formatters';
 import { Button } from '@/components/common/Button';
+import { useFavorites } from '@/contexts/FavoritesContext';
 
 /**
  * BookCard component props
@@ -18,9 +19,15 @@ interface BookCardProps {
  */
 export function BookCard({ book }: BookCardProps) {
   const navigate = useNavigate();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const handleClick = () => {
     navigate(`/books/${book.id}`);
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleFavorite(book);
   };
 
   return (
@@ -62,6 +69,32 @@ export function BookCard({ book }: BookCardProps) {
               <span className="text-sm font-bold text-slate-900">{formatRating(book.rating)}</span>
             </div>
           </div>
+        </div>
+
+        {/* Favorite Heart Icon */}
+        <div className="absolute top-4 left-4">
+          <button
+            onClick={handleFavoriteClick}
+            className={`p-2 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 ${
+              isFavorite(book.id)
+                ? 'bg-red-500/90 text-white shadow-lg shadow-red-500/30'
+                : 'bg-white/90 text-slate-400 hover:text-red-500'
+            }`}
+          >
+            <svg
+              className="w-5 h-5"
+              fill={isFavorite(book.id) ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+          </button>
         </div>
       </div>
 

@@ -17,6 +17,7 @@ export function Navigation({ mobile = false }: NavigationProps) {
   const links = [
     { to: '/', label: 'Home' },
     { to: '/books', label: 'Books' },
+    { to: '/favorites', label: 'Favorites' },
     { to: '/recommendations', label: 'Recommendations' },
     { to: '/reading-lists', label: 'Reading Lists' },
     { to: '/admin', label: 'Admin' },

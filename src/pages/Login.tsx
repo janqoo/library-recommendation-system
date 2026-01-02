@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,11 +11,20 @@ import { handleApiError } from '@/utils/errorHandling';
  */
 export function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    // Check if redirected from password reset with success message
+    if (location.state?.message) {
+      setMessage(location.state.message);
+    }
+  }, [location]);
 
   const validate = (): boolean => {
     const newErrors: { email?: string; password?: string } = {};
@@ -80,6 +89,12 @@ export function Login() {
         </div>
 
         <div className="glass-effect rounded-3xl shadow-2xl border border-white/20 p-8">
+          {message && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-green-800 text-sm">{message}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit}>
             <Input
               label="Email"

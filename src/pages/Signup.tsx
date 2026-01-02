@@ -11,16 +11,19 @@ import { handleApiError } from '@/utils/errorHandling';
  */
 export function Signup() {
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { signup, confirmSignup, login } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmationCode, setConfirmationCode] = useState('');
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [errors, setErrors] = useState<{
     name?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
+    confirmationCode?: string;
   }>({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -61,10 +64,36 @@ export function Signup() {
 
     setIsLoading(true);
     try {
-      await signup(email, password, name);
+      const result = await signup(email, password, name);
+      if (result.requiresConfirmation) {
+        setShowConfirmation(true);
+      } else {
+        navigate('/');
+      }
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleConfirmation = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!confirmationCode.trim()) {
+      setErrors({ confirmationCode: 'Verification code is required' });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await confirmSignup(email, confirmationCode);
+      // After successful confirmation, automatically log the user in
+      await login(email, password);
       navigate('/');
     } catch (error) {
       handleApiError(error);
+      setErrors({ confirmationCode: 'Invalid verification code' });
     } finally {
       setIsLoading(false);
     }
@@ -98,80 +127,122 @@ export function Signup() {
         </div>
 
         <div className="glass-effect rounded-3xl shadow-2xl border border-white/20 p-8">
-          <form onSubmit={handleSubmit}>
-            <Input
-              label="Full Name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              error={errors.name}
-              required
-              placeholder="John Doe"
-            />
+          {!showConfirmation ? (
+            <form onSubmit={handleSubmit}>
+              <Input
+                label="Full Name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                error={errors.name}
+                required
+                placeholder="John Doe"
+              />
 
-            <Input
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-              required
-              placeholder="you@example.com"
-            />
+              <Input
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={errors.email}
+                required
+                placeholder="you@example.com"
+              />
 
-            <Input
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={errors.password}
-              required
-              placeholder="••••••••"
-            />
+              <Input
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={errors.password}
+                required
+                placeholder="••••••••"
+              />
 
-            <Input
-              label="Confirm Password"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              error={errors.confirmPassword}
-              required
-              placeholder="••••••••"
-            />
+              <Input
+                label="Confirm Password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                error={errors.confirmPassword}
+                required
+                placeholder="••••••••"
+              />
 
-            <div className="mb-6">
-              <label className="flex items-start cursor-pointer group">
-                <input
-                  type="checkbox"
-                  className="mt-1 mr-2 w-4 h-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
-                  required
-                />
-                <span className="text-sm text-slate-600 group-hover:text-slate-900">
-                  I agree to the{' '}
-                  <Link to="/terms" className="text-violet-600 hover:text-violet-700 font-semibold">
-                    Terms of Service
-                  </Link>{' '}
-                  and{' '}
-                  <Link
-                    to="/privacy"
-                    className="text-violet-600 hover:text-violet-700 font-semibold"
-                  >
-                    Privacy Policy
-                  </Link>
-                </span>
-              </label>
-            </div>
+              <div className="mb-6">
+                <label className="flex items-start cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    className="mt-1 mr-2 w-4 h-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
+                    required
+                  />
+                  <span className="text-sm text-slate-600 group-hover:text-slate-900">
+                    I agree to the{' '}
+                    <Link to="/terms" className="text-violet-600 hover:text-violet-700 font-semibold">
+                      Terms of Service
+                    </Link>{' '}
+                    and{' '}
+                    <Link
+                      to="/privacy"
+                      className="text-violet-600 hover:text-violet-700 font-semibold"
+                    >
+                      Privacy Policy
+                    </Link>
+                  </span>
+                </label>
+              </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Creating account...' : 'Sign Up'}
-            </Button>
-          </form>
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Creating account...' : 'Sign Up'}
+              </Button>
+            </form>
+          ) : (
+            <form onSubmit={handleConfirmation}>
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">Check Your Email</h2>
+                <p className="text-slate-600">
+                  We sent a verification code to <strong>{email}</strong>
+                </p>
+              </div>
+
+              <Input
+                label="Verification Code"
+                type="text"
+                value={confirmationCode}
+                onChange={(e) => setConfirmationCode(e.target.value)}
+                error={errors.confirmationCode}
+                required
+                placeholder="123456"
+                maxLength={6}
+              />
+
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="w-full mb-4"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Verifying...' : 'Verify Email'}
+              </Button>
+
+              <Button
+                type="button"
+                variant="secondary"
+                size="lg"
+                className="w-full"
+                onClick={() => setShowConfirmation(false)}
+              >
+                Back to Sign Up
+              </Button>
+            </form>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600">
