@@ -30,15 +30,13 @@ export function Recommendations() {
 
     setIsLoading(true);
     try {
-      // TODO: Replace with actual Bedrock API call
-      // This will call Lambda function that uses Amazon Bedrock
-      // to generate personalized recommendations based on the query
-      const recs = await getRecommendations();
+      // Call the real AI recommendations API with the user's query
+      const recs = await getRecommendations(query);
       setRecommendations(recs);
 
-      // Fetch full book details for each recommendation
-      const books = await Promise.all(recs.map((rec) => getBook(rec.bookId)));
-      setRecommendedBooks(books.filter((book): book is Book => book !== null));
+      // For AI recommendations, we'll display them directly since they're new books
+      // We don't need to fetch from our book database
+      setRecommendedBooks([]);
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -136,49 +134,55 @@ export function Recommendations() {
         {!isLoading && recommendations.length > 0 && (
           <div>
             <h2 className="text-3xl font-bold mb-8">
-              <span className="gradient-text">Recommended for You</span>
+              <span className="gradient-text">AI Recommendations for You</span>
             </h2>
 
-            {/* Display recommendations with reasons */}
+            {/* Display AI recommendations */}
             <div className="space-y-6 mb-12">
-              {recommendations.map((rec, index) => {
-                const book = recommendedBooks[index];
-                if (!book) return null;
-
-                return (
-                  <div
-                    key={rec.id}
-                    className="glass-effect rounded-2xl shadow-xl border border-white/20 p-6 hover-glow transition-all duration-300"
-                  >
-                    <div className="flex items-start gap-6">
-                      <img
-                        src={book.coverImage}
-                        alt={book.title}
-                        className="w-28 h-40 object-cover rounded-xl shadow-lg"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://picsum.photos/112/160?random=' + book.id;
-                        }}
-                      />
-                      <div className="flex-1">
-                        <h3 className="text-2xl font-bold text-slate-900 mb-2">{book.title}</h3>
-                        <p className="text-slate-600 mb-3 font-medium">by {book.author}</p>
-                        <p className="text-slate-700 mb-4 leading-relaxed">{rec.reason}</p>
-                        <div className="flex flex-wrap items-center gap-3">
-                          <div className="bg-gradient-to-r from-violet-100 to-indigo-100 px-3 py-1.5 rounded-xl border border-violet-200">
-                            <span className="text-sm text-violet-700 font-semibold">
-                              Confidence: {Math.round(rec.confidence * 100)}%
-                            </span>
-                          </div>
-                          <span className="badge-gradient px-3 py-1.5 text-sm">{book.genre}</span>
+              {recommendations.map((rec) => (
+                <div
+                  key={rec.id}
+                  className="glass-effect rounded-2xl shadow-xl border border-white/20 p-6 hover-glow transition-all duration-300"
+                >
+                  <div className="flex items-start gap-6">
+                    <div className="w-28 h-40 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-lg">
+                      <svg
+                        className="w-12 h-12 text-violet-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                        {rec.aiBook?.title || 'AI Recommended Book'}
+                      </h3>
+                      <p className="text-slate-600 mb-3 font-medium">
+                        by {rec.aiBook?.author || 'Various Authors'}
+                      </p>
+                      <p className="text-slate-700 mb-4 leading-relaxed">{rec.reason}</p>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="bg-gradient-to-r from-violet-100 to-indigo-100 px-3 py-1.5 rounded-xl border border-violet-200">
+                          <span className="text-sm text-violet-700 font-semibold">
+                            AI Confidence: {Math.round(rec.confidence * 100)}%
+                          </span>
                         </div>
+                        <span className="bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 px-3 py-1.5 rounded-xl text-sm font-semibold border border-emerald-200">
+                          🤖 AI Powered
+                        </span>
                       </div>
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
-
-            <BookGrid books={recommendedBooks} />
           </div>
         )}
 
