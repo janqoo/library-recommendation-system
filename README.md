@@ -1,5 +1,12 @@
 # Libra AI - AI-Powered Book Recommendation System
 
+![AWS](https://img.shields.io/badge/AWS-Serverless-orange)
+![React](https://img.shields.io/badge/React-19-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Bedrock](https://img.shields.io/badge/Bedrock-Claude%203%20Haiku-purple)
+![DynamoDB](https://img.shields.io/badge/DynamoDB-NoSQL-red)
+
 An intelligent library book recommendation system built with React, TypeScript, and AWS serverless architecture. This project demonstrates modern full-stack development with AI integration for CENG413 Software Quality Standards course.
 
 ## 🌐 Live Application
