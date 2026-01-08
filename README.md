@@ -11,7 +11,7 @@ An intelligent library book recommendation system built with React, TypeScript, 
 
 ## 🌐 Live Application
 
-**🎉 DEPLOYED APPLICATION**: https://d11aq4bxwxf4t.cloudfront.net
+**🎉 DEPLOYED APPLICATION**: https://d11aq44bewncft.cloudfront.net
 
 **Status**: ✅ **FULLY DEPLOYED AND WORKING!**
 - ✅ Frontend deployed via CloudFront to global CDN
