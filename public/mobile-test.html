@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .test-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .success { background: rgba(0, 255, 0, 0.2); }
+        .error { background: rgba(255, 0, 0, 0.2); }
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 5px;
+            min-height: 44px;
+            min-width: 44px;
+        }
+        button:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        #results {
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 iPhone Compatibility Test</h1>
+        
+        <div class="test-item">
+            <h3>Device Info</h3>
+            <div id="device-info"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Touch Test</h3>
+            <button onclick="touchTest()">Tap Me!</button>
+            <div id="touch-result"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Input Test</h3>
+            <input type="text" placeholder="Type here to test keyboard" id="test-input">
+            <div id="input-result"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>API Test</h3>
+            <button onclick="testAPI()">Test API Connection</button>
+            <div id="api-result"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Local Storage Test</h3>
+            <button onclick="testStorage()">Test Storage</button>
+            <div id="storage-result"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Navigation Test</h3>
+            <button onclick="window.location.href='/'">Go to Main App</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Log function
+        function log(message) {
+            const results = document.getElementById('results');
+            results.innerHTML += new Date().toLocaleTimeString() + ': ' + message + '<br>';
+            results.scrollTop = results.scrollHeight;
+            console.log(message);
+        }
+
+        // Device info
+        function showDeviceInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                screenWidth: screen.width,
+                screenHeight: screen.height,
+                windowWidth: window.innerWidth,
+                windowHeight: window.innerHeight,
+                devicePixelRatio: window.devicePixelRatio
+            };
+            
+            document.getElementById('device-info').innerHTML = 
+                `Screen: ${info.screenWidth}x${info.screenHeight}<br>
+                 Window: ${info.windowWidth}x${info.windowHeight}<br>
+                 Pixel Ratio: ${info.devicePixelRatio}<br>
+                 Online: ${info.onLine}<br>
+                 Cookies: ${info.cookieEnabled}`;
+            
+            log('Device info loaded');
+        }
+
+        // Touch test
+        function touchTest() {
+            document.getElementById('touch-result').innerHTML = '✅ Touch working!';
+            log('Touch test successful');
+        }
+
+        // Input test
+        document.getElementById('test-input').addEventListener('input', function(e) {
+            document.getElementById('input-result').innerHTML = `✅ Typed: "${e.target.value}"`;
+            log('Input test: ' + e.target.value);
+        });
+
+        // API test
+        async function testAPI() {
+            const apiResult = document.getElementById('api-result');
+            apiResult.innerHTML = '🔄 Testing API...';
+            
+            try {
+                const response = await fetch('https://dm4c45d6xd.execute-api.us-east-1.amazonaws.com/dev/books');
+                if (response.ok) {
+                    const data = await response.json();
+                    apiResult.innerHTML = `✅ API working! Found ${data.books?.length || 0} books`;
+                    log('API test successful: ' + data.books?.length + ' books');
+                } else {
+                    apiResult.innerHTML = `❌ API Error: ${response.status}`;
+                    log('API test failed: ' + response.status);
+                }
+            } catch (error) {
+                apiResult.innerHTML = `❌ API Error: ${error.message}`;
+                log('API test error: ' + error.message);
+            }
+        }
+
+        // Storage test
+        function testStorage() {
+            const storageResult = document.getElementById('storage-result');
+            try {
+                localStorage.setItem('test', 'value');
+                const value = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (value === 'value') {
+                    storageResult.innerHTML = '✅ Local Storage working!';
+                    log('Storage test successful');
+                } else {
+                    storageResult.innerHTML = '❌ Local Storage failed';
+                    log('Storage test failed');
+                }
+            } catch (error) {
+                storageResult.innerHTML = `❌ Storage Error: ${error.message}`;
+                log('Storage test error: ' + error.message);
+            }
+        }
+
+        // Initialize
+        showDeviceInfo();
+        log('Mobile test page loaded');
+
+        // Error handling
+        window.addEventListener('error', function(e) {
+            log('JavaScript Error: ' + e.message);
+        });
+
+        // Unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            log('Promise Rejection: ' + e.reason);
+        });
+    </script>
+</body>
+</html>

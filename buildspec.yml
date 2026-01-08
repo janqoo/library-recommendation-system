@@ -1,0 +1,39 @@
+version: 0.2
+env:
+  variables:
+    VITE_API_BASE_URL: "https://dm4c45d6xd.execute-api.us-east-1.amazonaws.com/dev"
+    VITE_COGNITO_USER_POOL_ID: "us-east-1_yeEUsuvJj"
+    VITE_COGNITO_CLIENT_ID: "3enb5l75s3s8524rvqh2lhtsti"
+    VITE_AWS_REGION: "us-east-1"
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo "Installing dependencies..."
+      - npm install
+  pre_build:
+    commands:
+      - echo "Pre-build phase started on `date`"
+      - echo "Node version:" && node --version
+      - echo "NPM version:" && npm --version
+      - echo "Environment variables set:"
+      - echo "VITE_API_BASE_URL=$VITE_API_BASE_URL"
+      - echo "VITE_AWS_REGION=$VITE_AWS_REGION"
+  build:
+    commands:
+      - echo "Build phase started on `date`"
+      - npm run build
+  post_build:
+    commands:
+      - echo "Build completed on `date`"
+      - echo "Listing dist directory contents:"
+      - ls -la dist/
+artifacts:
+  files:
+    - '**/*'
+  base-directory: dist
+cache:
+  paths:
+    - 'node_modules/**/*'
+
