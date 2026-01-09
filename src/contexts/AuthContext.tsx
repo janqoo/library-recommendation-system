@@ -55,7 +55,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           id: currentUser.userId,
           email: userAttributes.email || currentUser.signInDetails?.loginId || '',
           name: userAttributes.name || userAttributes.email || 'User',
-          role: 'admin', // Temporarily set all users as admin for testing
+          role: (userAttributes.email || '').endsWith('@stu.okan.edu.tr') ? 'admin' : 'user', // Okan University students get admin role
           createdAt: new Date().toISOString()
         });
       } catch {
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           id: currentUser.userId,
           email: email,
           name: userAttributes.name || userAttributes.email || 'User',
-          role: 'admin', // Temporarily set all users as admin for testing
+          role: email.endsWith('@stu.okan.edu.tr') ? 'admin' : 'user', // Okan University students get admin role
           createdAt: new Date().toISOString(),
         });
       }

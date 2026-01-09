@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 /**
  * Navigation component props
@@ -12,15 +13,19 @@ interface NavigationProps {
  *
  * Displays navigation links for all main routes
  * Responsive: horizontal on desktop, vertical on mobile
+ * Admin link only visible to admin users
  */
 export function Navigation({ mobile = false }: NavigationProps) {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
   const links = [
     { to: '/', label: 'Home' },
     { to: '/books', label: 'Books' },
     { to: '/favorites', label: 'Favorites' },
     { to: '/recommendations', label: 'Recommendations' },
     { to: '/reading-lists', label: 'Reading Lists' },
-    { to: '/admin', label: 'Admin' },
+    ...(isAdmin ? [{ to: '/admin', label: 'Admin' }] : []), // Only show Admin link for admin users
   ];
 
   const baseClasses = 'transition-all duration-300 font-semibold';
